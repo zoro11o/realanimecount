@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RealAnimeCount</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #e6e6e6;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 60px 40px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        .about {
+            background: #151515;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #222;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            font-size: 14px;
+            color: #bbb;
+        }
+
+        form {
+            margin-bottom: 30px;
+        }
+
+        input {
+            padding: 10px;
+            width: 250px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 6px;
+        }
+
+        button {
+            padding: 10px 14px;
+            background: #4CAF50;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .stats {
+            margin-top: 30px;
+            margin-bottom: 40px;
+        }
+
+        .count {
+            font-size: 18px;
+            color: #4CAF50;
+            margin-bottom: 6px;
+        }
+
+        .total {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .franchise {
+            background: #151515;
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .franchise h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .franchise-time {
+            color: #4CAF50;
+            font-size: 13px;
+            margin-left: 8px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 10px;
+        }
+
+        li {
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .time {
+            color: #888;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+        footer {
+            margin-top: 60px;
+            font-size: 12px;
+            color: #555;
+            text-align: center;
+        }
+
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>RealAnimeCount</h1>
+    <div class="subtitle">
+         Stop counting every sequel separately.
+    </div>
+
+    <div class="about">
+        RealAnimeCount recalculates your true anime total by grouping all related seasons,
+        sequels, side stories, and spin-offs into unified franchise clusters.
+        <br><br>
+        Unlike AniList, which counts every season as a separate entry,
+        this tool merges connected anime using relation graph traversal (DFS)
+        and calculates accurate lifetime watch time — including partial watches and rewatches.
+    </div>
+
+    <form method="POST">
+        <input type="text" name="username" placeholder="Enter AniList username" required>
+        <button type="submit">Calculate</button>
+    </form>
+
+    {% if count is not none %}
+        <div class="stats">
+            <div class="count">
+                {{ username }} → {{ count }} Unique Franchises
+            </div>
+            <div class="total">
+                Lifetime Watch Time: {{ total_watch_time }}
+            </div>
+        </div>
+
+        {% for fr in franchises %}
+            <div class="franchise">
+                <h3>
+                    {{ fr.franchise_name }}
+                    <span class="franchise-time">
+                        {{ fr.total_time }}
+                    </span>
+                </h3>
+
+                <ul>
+                    {% for t in fr.titles %}
+                        <li>
+                            • {{ t.title }}
+                            <span class="time">
+                                {{ t.time_spent }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <footer>
+        Built with Python • Flask • AniList GraphQL • DFS Graph Traversal
+    </footer>
+
+</div>
+</body>
+</html>
