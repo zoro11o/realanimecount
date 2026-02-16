@@ -4,7 +4,43 @@
     <title>RealAnimeCount</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
+    <style>  
+
+            .top-links img {
+            width: 28px;
+            height: 28px;
+            padding: 6px;
+            background: #353434;
+            border-radius: 50%;
+            transition: 0.2s ease;
+            }
+
+            .top-links img:hover {
+            transform: scale(1.1);
+            background: #41ff1b;
+            }
+   
+            .top-links {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+            }
+
+            .top-links img {
+            width: 28px;
+            height: 28px;
+            filter: brightness(0.9);
+            transition: 0.2s ease;
+            }
+
+            .top-links img:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+            }
+
         body {
             background-color: #0d0d0d;
             color: #e6e6e6;
@@ -14,6 +50,7 @@
         }
 
         .container {
+            color: rgb(50, 243, 25);
             max-width: 900px;
             margin: auto;
         }
@@ -25,7 +62,7 @@
         }
 
         .subtitle {
-            color: #888;
+            color: #ffffff;
             font-size: 14px;
             margin-bottom: 40px;
         }
@@ -43,6 +80,11 @@
 
         form {
             margin-bottom: 30px;
+            
+        }
+        input:hover{
+            transform: scale(1.1);
+            filter: brightness(1.2);
         }
 
         input {
@@ -52,11 +94,12 @@
             border: 1px solid #333;
             color: #fff;
             border-radius: 6px;
+            
         }
 
         button {
             padding: 10px 14px;
-            background: #4CAF50;
+            background: #1fff26;
             border: none;
             border-radius: 6px;
             color: white;
@@ -66,6 +109,8 @@
 
         button:hover {
             opacity: 0.9;
+            transform: scale(1.1);
+            filter: brightness(1.2);
         }
 
         .stats {
@@ -75,13 +120,13 @@
 
         .count {
             font-size: 18px;
-            color: #4CAF50;
+            color: #17fa17;
             margin-bottom: 6px;
         }
 
         .total {
             font-size: 14px;
-            color: #aaa;
+            color: #ffffff;
         }
 
         .franchise {
@@ -98,7 +143,7 @@
         }
 
         .franchise-time {
-            color: #4CAF50;
+            color: #ffffff;
             font-size: 13px;
             margin-left: 8px;
         }
@@ -115,7 +160,7 @@
         }
 
         .time {
-            color: #888;
+            color: #c7c7c6;
             font-size: 12px;
             margin-left: 6px;
         }
@@ -131,6 +176,16 @@
 </head>
 
 <body>
+    <div class="top-links">
+    <a href="https://anilist.co/user/Zoro11o/" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/61/AniList_logo.svg" alt="AniList">
+    </a>
+
+    <a href="http://discord.com/users/1006517809876049950" target="_blank">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="Discord" ">
+    </a>
+</div>
+
 <div class="container">
 
     <h1>RealAnimeCount</h1>
