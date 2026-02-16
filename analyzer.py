@@ -41,7 +41,8 @@ def get_unique_franchises(username):
             media {
               id
               title {
-                    userPreferred
+                romaji
+                english
                 }
               episodes
               duration
@@ -82,7 +83,8 @@ def get_unique_franchises(username):
 
             media = entry["media"]
             media_id = media["id"]
-            title = media["title"]["userPreferred"]
+            title_data = media["title"]
+            title = title_data["english"] if title_data["english"] else title_data["romaji"]
             duration = media["duration"] or 0
             total_eps = media["episodes"] or 0
             progress = entry["progress"] or 0
@@ -178,5 +180,6 @@ def get_unique_franchises(username):
     franchises.sort(key=lambda x: x["total_minutes"], reverse=True)
 
     return franchises, format_time(total_watch_minutes)
+
 
 
