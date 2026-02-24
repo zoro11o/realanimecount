@@ -30,6 +30,7 @@ def format_time(minutes):
 
 
 def get_unique_franchises(username):
+
     query = """
     query ($username: String) {
       MediaListCollection(userName: $username, type: ANIME) {
@@ -43,7 +44,9 @@ def get_unique_franchises(username):
               title {
                 romaji
                 english
-                }
+              }
+              format
+              startDate { year }
               episodes
               duration
               relations {
@@ -61,7 +64,7 @@ def get_unique_franchises(username):
 
     response = requests.post(
         ANILIST_API,
-        json={"query": query, "variables": {"username": username}}
+        json={"query": query, "variables": {"username": username}},
     )
 
     data = response.json()
@@ -83,20 +86,22 @@ def get_unique_franchises(username):
 
             media = entry["media"]
             media_id = media["id"]
+
             title_data = media["title"]
-            title = title_data["english"] if title_data["english"] else title_data["romaji"]
+            title = title_data["english"] or title_data["romaji"] or "Unknown"
+
             duration = media["duration"] or 0
             total_eps = media["episodes"] or 0
             progress = entry["progress"] or 0
             repeat = entry["repeat"] or 0
 
-            # Base episodes watched
+            # Episodes watched
             if entry["status"] == "COMPLETED" and total_eps:
                 watched_eps = total_eps
             else:
                 watched_eps = progress
 
-            # Add rewatch episodes
+            # Add rewatch
             if repeat and total_eps:
                 watched_eps += repeat * total_eps
 
@@ -112,7 +117,9 @@ def get_unique_franchises(username):
                 "title": title,
                 "related_ids": related_ids,
                 "time_spent": time_spent,
-                "rewatch_count": repeat
+                "rewatch_count": repeat,
+                "format": media.get("format"),
+                "start_year": media.get("startDate", {}).get("year")
             }
 
     # -------------------------
@@ -128,6 +135,9 @@ def get_unique_franchises(username):
     franchises = []
     total_watch_minutes = 0
 
+    # -------------------------
+    # DFS to group franchises
+    # -------------------------
     def dfs(start_id):
         stack = [start_id]
         component = set()
@@ -145,6 +155,7 @@ def get_unique_franchises(username):
 
     for media_id in media_map:
         if media_id not in visited:
+
             component = dfs(media_id)
             visited.update(component)
 
@@ -156,30 +167,38 @@ def get_unique_franchises(username):
                 total_time += item["time_spent"]
 
                 title_display = item["title"]
-
-                # Show rewatch count only if exists
                 if item["rewatch_count"] > 0:
                     title_display += f" (Rewatched x{item['rewatch_count']})"
 
                 titles.append({
                     "title": title_display,
-                    "time_spent": format_time(item["time_spent"])
+                    "time_spent": format_time(item["time_spent"]),
+                    "format": item.get("format"),
+                    "start_year": item.get("start_year")
                 })
 
             total_watch_minutes += total_time
 
+            # Sort alphabetically for display
             titles.sort(key=lambda x: x["title"].lower())
 
+            # Select franchise anchor
+            main_entry = sorted(
+                titles,
+                key=lambda x: (
+                    x.get("format") != "TV",      # TV first
+                    x.get("start_year") or 9999  # oldest first
+                )
+            )[0]
+
             franchises.append({
-                "franchise_name": titles[0]["title"],
+                "franchise_name": main_entry["title"],
                 "total_time": format_time(total_time),
                 "total_minutes": total_time,
                 "titles": titles
             })
 
+    # Sort franchises by watch time
     franchises.sort(key=lambda x: x["total_minutes"], reverse=True)
 
     return franchises, format_time(total_watch_minutes)
-
-
-
