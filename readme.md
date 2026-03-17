@@ -1,7 +1,7 @@
 # RealAnimeCount
 
 RealAnimeCount is a web app that calculates your actual anime count by grouping related entries (sequels, prequels, side stories, etc.) into single franchises.
-
+It fetches data from your AniList account using your username and processes it to provide a more accurate count of watched anime along with total watch time and re-watches.
 It uses AniList data and processes it to give a more accurate representation of how much anime you've watched, along with total watch time.
 
 ---
