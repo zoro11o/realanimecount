@@ -1,53 +1,45 @@
-= RealAnimeCount
+# RealAnimeCount
 
-RealAnimeCount recalculates your true anime count by grouping all related seasons, sequels, and side stories into single franchises instead of counting them separately.
+RealAnimeCount is a web app that calculates your actual anime count by grouping related entries (sequels, prequels, side stories, etc.) into single franchises.
 
-Unlike AniList, which counts every season as a separate entry, RealAnimeCount merges connected anime into unified franchise clusters.
+It uses AniList data and processes it to give a more accurate representation of how much anime you've watched, along with total watch time.
 
-= What It Does
+---
+Live on https://realanimecount.onrender.com/
 
-Connects to the AniList GraphQL API
+## What it does
 
-Groups anime by franchise using relation graphs
+- Fetches your anime list from AniList
+- Groups connected anime into franchises using their relations
+- Counts each franchise once instead of counting every season separately
+- Calculates total watch time including rewatches
 
-Uses DFS traversal to detect connected components
+---
 
-Counts one franchise as one anime
+## How to use
 
-Calculates total watch time
+1. Enter your AniList username
+2. Submit the form
+3. View:
+   - Total number of unique franchises
+   - Total watch time
+   - Breakdown of each franchise and its entries
 
-Includes partial watches (Current, Dropped, Paused)
+---
 
-Includes rewatches
+## Run locally
 
-Displays clean, franchise-based breakdown
+```bash
+git clone https://github.com/zoro11o/realanimecount.git
+cd realanimecount
+pip install flask requests
+python app.py
+```
 
-= Why It Exists
+Open in browser:
 
-AniList inflates anime totals by counting:
+```
+http://localhost:10000
+```
 
-Season 1
-
-Season 2
-
-Final Season
-
-OVAs
-
-Side stories
-
-as separate anime.
-
-RealAnimeCount fixes that.
-
-= Tech Stack
-
-Python
-
-Flask
-
-GraphQL (AniList API)
-
-DFS Graph Traversal
-
-HTML (Jinja templating)
+---
