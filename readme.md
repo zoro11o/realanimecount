@@ -21,7 +21,7 @@ Live on https://realanimecount.onrender.com/
 ## How to use
 
 1. Enter your AniList username
-2. Submit the form
+2. Click on calculate
 3. View:
    - Total number of unique franchises
    - Total watch time
