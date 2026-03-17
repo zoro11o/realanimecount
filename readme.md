@@ -40,6 +40,8 @@ Open in browser:
 
 ```
 http://localhost:10000
+
+(or check terminal for the exact port)
 ```
 
 ---
