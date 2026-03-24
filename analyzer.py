@@ -64,20 +64,40 @@ def get_unique_franchises(username):
     }
     """
 
-    response = requests.post(
-        ANILIST_API,
-        json={"query": query, "variables": {"username": username}},
-    )
-
-    data = response.json()
-
-    if "errors" in data:
+    try:
+        response = requests.post(
+            ANILIST_API,
+            json={"query": query, "variables": {"username": username}},
+            timeout=15
+        )
+        response.raise_for_status()
+        data = response.json()
+    except requests.exceptions.Timeout:
+        print(f"[ERROR] Request timed out for user: {username}")
+        return [], "0m"
+    except requests.exceptions.HTTPError as e:
+        print(f"[ERROR] HTTP error: {e}")
+        return [], "0m"
+    except requests.exceptions.RequestException as e:
+        print(f"[ERROR] Request failed: {e}")
+        return [], "0m"
+    except ValueError:
+        print("[ERROR] Failed to parse JSON response")
         return [], "0m"
 
-    media_map = {}              # watched anime only
-    full_graph = defaultdict(set)  # full connectivity graph
+    if "errors" in data:
+        print(f"[ERROR] AniList API errors: {data['errors']}")
+        return [], "0m"
 
-    lists = data["data"]["MediaListCollection"]["lists"]
+    # Safety check for unexpected response structure
+    try:
+        lists = data["data"]["MediaListCollection"]["lists"]
+    except (KeyError, TypeError):
+        print("[ERROR] Unexpected response structure from AniList")
+        return [], "0m"
+
+    media_map = {}               # watched anime only
+    full_graph = defaultdict(set)  # full connectivity graph
 
     # -------------------------
     # Build watched media_map + full_graph
@@ -92,12 +112,12 @@ def get_unique_franchises(username):
             media_id = media["id"]
 
             title_data = media["title"]
-            title = title_data["english"] or title_data["romaji"] or "Unknown"
+            title = title_data.get("english") or title_data.get("romaji") or "Unknown"
 
-            duration = media["duration"] or 0
-            total_eps = media["episodes"] or 0
-            progress = entry["progress"] or 0
-            repeat = entry["repeat"] or 0
+            duration = media.get("duration") or 0
+            total_eps = media.get("episodes") or 0
+            progress = entry.get("progress") or 0
+            repeat = entry.get("repeat") or 0
 
             # Episodes watched
             if entry["status"] == "COMPLETED" and total_eps:
@@ -120,9 +140,8 @@ def get_unique_franchises(username):
 
             # Add ALL relations to full graph (even if not watched)
             for edge in media.get("relations", {}).get("edges", []):
-                if edge["relationType"] in RELATION_TYPES:
+                if edge.get("relationType") in RELATION_TYPES:
                     related_id = edge["node"]["id"]
-
                     full_graph[media_id].add(related_id)
                     full_graph[related_id].add(media_id)
 
@@ -154,7 +173,7 @@ def get_unique_franchises(username):
 
             component = dfs(media_id)
 
-            # mark all nodes visited (including bridges)
+            # Mark all nodes visited (including bridges)
             visited.update(component)
 
             # Filter to watched anime only
